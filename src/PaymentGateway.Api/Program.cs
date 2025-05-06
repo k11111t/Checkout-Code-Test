@@ -1,4 +1,11 @@
-using PaymentGateway.Api.Services;
+using Microsoft.Extensions.Options;
+
+using PaymentGateway.Api.Interfaces;
+using PaymentGateway.Api.Models.Data;
+using PaymentGateway.Api.Models.Requests;
+using PaymentGateway.Api.Services.Bank;
+using PaymentGateway.Api.Services.PaymentGateway;
+using PaymentGateway.Api.Services.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +16,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<PaymentsRepository>();
+builder.Services.Configure<PaymentGatewayConfiguration>(
+    builder.Configuration.GetSection("PaymentGatewayConfig"));
 
-var app = builder.Build();
+builder.Services.AddSingleton<IPaymentGatewayConfiguration>(sp =>
+    sp.GetRequiredService<IOptions<PaymentGatewayConfiguration>>().Value);
+
+builder.Services.AddScoped<IValidator<PostPaymentRequest>, AmountValidator>();
+builder.Services.AddScoped<IValidator<PostPaymentRequest>, CardNumberValidator>();
+builder.Services.AddScoped<IValidator<PostPaymentRequest>, CurrencyValidator>();
+builder.Services.AddScoped<IValidator<PostPaymentRequest>, CvvValidator>();
+builder.Services.AddScoped<IValidator<PostPaymentRequest>, ExpiryDateValidator>();
+builder.Services.AddScoped<IValidator<PostPaymentRequest>, ExpiryMonthValidator>();
+builder.Services.AddScoped<IValidator<PostPaymentRequest>, ExpiryYearValidator>();
+
+builder.Services.AddScoped<IValidatorManager<PostPaymentRequest>, PaymentValidationManager>();
+
+builder.Services.AddSingleton<IRepository<PaymentRecord>, PaymentsRepository>();
+builder.Services.AddScoped<IBankPaymentManager, BankPaymentManager>();
+builder.Services.AddScoped<IPaymentManager, PaymentManager>();
+
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
