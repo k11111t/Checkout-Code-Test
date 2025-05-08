@@ -1,5 +1,7 @@
 namespace PaymentGateway.Api.Models.Data;
-public class PaymentRecord {
+
+public class PaymentRecord
+{
     public Guid Id { get; set; }
     public PaymentStatus Status { get; set; }
     public int CardNumberLastFour { get; set; }

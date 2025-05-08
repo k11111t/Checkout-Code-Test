@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 
 using PaymentGateway.Api.Interfaces;
@@ -7,22 +6,66 @@ using PaymentGateway.Api.Models.Responses;
 
 namespace PaymentGateway.Api.Services.Bank;
 public class BankPaymentManager : IBankPaymentManager {
-    private readonly IPaymentGatewayConfiguration _configuration;
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<BankPaymentManager> _logger;
+    private readonly IBankRequestBuilder _requestBuilder;
+    private readonly IBankResponseParser _responseParser;
 
-    public BankPaymentManager(IPaymentGatewayConfiguration configuration){
-        _configuration = configuration;
+    public BankPaymentManager(
+        HttpClient client, 
+        ILogger<BankPaymentManager> logger,
+        IBankRequestBuilder requestBuilder,
+        IBankResponseParser responseParser)
+    {
+        _httpClient = client;
+        _logger = logger;
+        _requestBuilder = requestBuilder;
+        _responseParser = responseParser;
     }
     
-    public async Task<BankPaymentResponse> ProcessBankPaymentAsync(BankPaymentRequest request) {
-        string json = JsonSerializer.Serialize(request);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");   
+    public async Task<BankPaymentResponse?> ProcessBankPaymentAsync(BankPaymentRequest request)
+    {
+        try
+        {
+            // build request
+            HttpRequestMessage bankRequestMessage = _requestBuilder.BuildRequest(request);
 
-        HttpClient httpClient= new HttpClient();
-        HttpResponseMessage bankResponse = await httpClient.PostAsync(_configuration.BankServiceUrl, content);
+            // send request to the bank
+            HttpResponseMessage bankResponseMessage = await _httpClient.SendAsync(bankRequestMessage);
 
-        Stream responseStream = await bankResponse.Content.ReadAsStreamAsync();
-        BankPaymentResponse? bankResponseObj = await JsonSerializer.DeserializeAsync<BankPaymentResponse>(responseStream);
-        bankResponse.EnsureSuccessStatusCode();
-        return bankResponseObj;
+            if(bankResponseMessage.StatusCode != System.Net.HttpStatusCode.OK) 
+            {
+                _logger.LogWarning("Bank failed to authorise payment");
+                return new BankPaymentResponse() {
+                    Authorized = false
+                };
+            }
+
+            // parse the response
+            BankPaymentResponse? bankPaymentResponse = await _responseParser.ParseResponseAsync(bankResponseMessage);
+            
+            if(bankPaymentResponse == null)
+            {
+                _logger.LogError("Failed to parse bank response.");
+                return null;
+            }
+
+            return bankPaymentResponse;
+        }
+        catch (HttpRequestException ex) 
+        {
+            _logger.LogError(ex, "Failed to connect to the bank service");
+            return null;
+        }
+        catch (JsonException ex)
+        {
+            _logger.LogError(ex, "Failed to deserialize bank response.");
+            return null;
+        }
+        catch (Exception ex) 
+        {
+            _logger.LogError(ex, "Something went wrong");
+            return null;
+        }        
     }
 }

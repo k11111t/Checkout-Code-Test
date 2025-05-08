@@ -16,6 +16,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug(); 
+
 builder.Services.Configure<PaymentGatewayConfiguration>(
     builder.Configuration.GetSection("PaymentGatewayConfig"));
 
@@ -33,7 +37,13 @@ builder.Services.AddScoped<IValidator<PostPaymentRequest>, ExpiryYearValidator>(
 builder.Services.AddScoped<IValidatorManager<PostPaymentRequest>, PaymentValidationManager>();
 
 builder.Services.AddSingleton<IRepository<PaymentRecord>, PaymentsRepository>();
-builder.Services.AddScoped<IBankPaymentManager, BankPaymentManager>();
+
+builder.Services.AddScoped<IBankRequestBuilder, BankRequestBuilder>();
+builder.Services.AddScoped<IBankResponseParser, BankResponseParser>();
+builder.Services.AddHttpClient<IBankPaymentManager, BankPaymentManager>(client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(10);
+    });
 builder.Services.AddScoped<IPaymentManager, PaymentManager>();
 
 WebApplication app = builder.Build();

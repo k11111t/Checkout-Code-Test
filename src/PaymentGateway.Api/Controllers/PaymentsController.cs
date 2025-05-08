@@ -2,7 +2,6 @@
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Api.Models;
-using PaymentGateway.Api.Models.Data;
 
 namespace PaymentGateway.Api.Controllers;
 
@@ -11,30 +10,32 @@ namespace PaymentGateway.Api.Controllers;
 public class PaymentsController : Controller
 {
     private readonly IPaymentManager _paymentManager;
-    public PaymentsController(IPaymentManager paymentManager) {
+    public PaymentsController(IPaymentManager paymentManager)
+    {
         _paymentManager = paymentManager;
     }
 
     [HttpPost]
     public async Task<ActionResult<PostPaymentResponse>> PostPaymentAsync([FromBody] PostPaymentRequest request)
     {
-        PostPaymentResponse response = await _paymentManager.ProcessPaymentAsync(request);
+        PostPaymentResponse? response = await _paymentManager.ProcessPaymentAsync(request);
         
-        if(response.Status == PaymentStatus.Rejected || response.Status == PaymentStatus.Declined)
+        if(response.Status == PaymentStatus.Rejected)
             return BadRequest(response);
-        
+
         return Ok(response);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<GetPaymentResponse?>> GetPaymentAsync(Guid id)
     {
-        GetPaymentResponse response = await _paymentManager.GetPaymentAsync(id);
+        GetPaymentResponse? response = await _paymentManager.GetPaymentAsync(id);
 
-        if(response == null) {
+        if(response == null)
+        {
             return NotFound();
         }
 
-        return new OkObjectResult(response);
+        return Ok(response);
     }
 }

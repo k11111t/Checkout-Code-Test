@@ -14,13 +14,15 @@ public class PaymentValidationManager : IValidatorManager<PostPaymentRequest>
     {
         errorMessages = new();
         foreach (var validator in _validators) {
-            if(!validator.Validate(request, out var errorDictionary)){
-                foreach(var error in errorDictionary){
+            if(!validator.Validate(request, out var errorDictionary))
+            {
+                foreach(var error in errorDictionary)
+                {
                     errorMessages[error.Key] = error.Value;
                 }
             }
         }
-        return !errorMessages.Any();
+        return errorMessages.Count == 0;
     }
 
 }

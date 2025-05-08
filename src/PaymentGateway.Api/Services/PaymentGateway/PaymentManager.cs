@@ -3,104 +3,75 @@ using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Models.Data;
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
+using PaymentGateway.Api.Toolbox;
 
 namespace PaymentGateway.Api.Services.PaymentGateway;
-public class PaymentManager : IPaymentManager {
+public class PaymentManager : IPaymentManager
+{
 
     private readonly IValidatorManager<PostPaymentRequest> _postRequestValidationService;
     private readonly IRepository<PaymentRecord> _paymentsRepository;
     private readonly IBankPaymentManager _bankPaymentManager;
+    private readonly ILogger<PaymentManager> _logger;
 
     public PaymentManager(
         IRepository<PaymentRecord> paymentsRepository, 
         IValidatorManager<PostPaymentRequest> postRequestValidationService,
-        IBankPaymentManager bankPaymentManager)
+        IBankPaymentManager bankPaymentManager,
+        ILogger<PaymentManager> logger)
     {
         _paymentsRepository = paymentsRepository;
         _postRequestValidationService = postRequestValidationService;
         _bankPaymentManager = bankPaymentManager;
+        _logger = logger;
     }
 
-    public async Task<PostPaymentResponse> ProcessPaymentAsync(PostPaymentRequest request) {
+    public async Task<PostPaymentResponse> ProcessPaymentAsync(PostPaymentRequest request)
+    {
         bool validationPassed = _postRequestValidationService.Validate(request, out var errorDetails);
-
-        PaymentRecord payment = new() {
-            Id = Guid.NewGuid(),
-            Status = PaymentStatus.Authorized,
-            CardNumberLastFour = int.Parse(request.CardNumber.Substring(request.CardNumber.Length-5, 4)),
-            ExpiryMonth = request.ExpiryMonth,
-            ExpiryYear = request.ExpiryYear,
-            Currency = request.Currency,
-            Amount = request.Amount
-        };
-
-        PostPaymentResponse response = MapToPostResponse(payment);
+        PostPaymentResponse result = new();
 
         if (!validationPassed)
         {
-            payment.Status = PaymentStatus.Rejected;
-            response.Status = PaymentStatus.Rejected;
-            _paymentsRepository.Add(payment);
-            return response;
+            _logger.LogError("Failed to validate payment");
+            result.Status = PaymentStatus.Rejected;
+            return result;
         }
 
         // send request to bank
-        BankPaymentRequest bankRequest = new BankPaymentRequest() {
-            CardNumber = request.CardNumber,
-            ExpiryDate =  $"{request.ExpiryMonth}/{request.ExpiryYear}",
-            Currency = request.Currency,
-            Amount = request.Amount,
-            Cvv = request.Cvv.ToString()
-        };
+        BankPaymentRequest bankRequest = PaymentMapper.CreateBankPaymentRequest(request);
+        BankPaymentResponse? bankResponse = await _bankPaymentManager.ProcessBankPaymentAsync(bankRequest);
 
-        BankPaymentResponse bankResponse = await _bankPaymentManager.ProcessBankPaymentAsync(bankRequest);
-
-        if(bankResponse.Authorized == false)
+        if(bankResponse == null)
         {
-            payment.Status = PaymentStatus.Declined;
-            response.Status = PaymentStatus.Declined;
-            _paymentsRepository.Add(payment);
-            return response;
+            _logger.LogError("Bank service failed to process payment");
+            result.Status = PaymentStatus.Rejected;
+            return result;
         }
 
-        // transaction was successful
+        // create payment record
+        _logger.LogInformation("Creating payment record");
+        PaymentRecord payment = PaymentMapper.CreatePaymentRecord(request);
+
+        // transaction failed
+        if(bankResponse.Authorized == false)
+            payment.Status = PaymentStatus.Declined;
+        
+        // record payment in DB
         _paymentsRepository.Add(payment);
-        return response;
+        _logger.LogInformation("Payment successfully recorded");
+
+        //create response to client
+        result = PaymentMapper.CreatePostResponse(payment);
+
+        return result;
     }
 
-    public async Task<GetPaymentResponse> GetPaymentAsync(Guid id){
-        PaymentRecord payment = await Task.Run(() => _paymentsRepository.Get(id));
+    public async Task<GetPaymentResponse?> GetPaymentAsync(Guid id)
+    {
+        PaymentRecord? payment = _paymentsRepository.Get(id);
         if(payment == null) return null;
-        GetPaymentResponse response = MapToGetResponse(payment);
+        GetPaymentResponse response = PaymentMapper.CreateGetResponse(payment);
         return response;
     }
-
-    private static PostPaymentResponse MapToPostResponse(PaymentRecord payment)
-    {
-        return new PostPaymentResponse
-        {
-            Id = payment.Id,
-            Status = payment.Status,
-            CardNumberLastFour = payment.CardNumberLastFour,
-            ExpiryMonth = payment.ExpiryMonth,
-            ExpiryYear = payment.ExpiryYear,
-            Currency = payment.Currency,
-            Amount = payment.Amount
-        };
-    }
-
-    private static GetPaymentResponse MapToGetResponse(PaymentRecord payment)
-    {
-        return new GetPaymentResponse
-        {
-            Id = payment.Id,
-            Status = payment.Status,
-            CardNumberLastFour = payment.CardNumberLastFour,
-            ExpiryMonth = payment.ExpiryMonth,
-            ExpiryYear = payment.ExpiryYear,
-            Currency = payment.Currency,
-            Amount = payment.Amount
-        };
-    }
-
 }

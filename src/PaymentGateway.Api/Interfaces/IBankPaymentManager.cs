@@ -5,6 +5,6 @@ namespace PaymentGateway.Api.Interfaces
 {
     public interface IBankPaymentManager
     {
-        Task<BankPaymentResponse> ProcessBankPaymentAsync(BankPaymentRequest request);
+        Task<BankPaymentResponse?> ProcessBankPaymentAsync(BankPaymentRequest request);
     }
 }
