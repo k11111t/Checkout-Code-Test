@@ -8,7 +8,7 @@ using Moq;
 using PaymentGateway.Api.Controllers;
 using PaymentGateway.Api.Models.Responses;
 
-namespace PaymentGateway.Api.Tests;
+namespace PaymentGateway.Api.Tests.IntegrationTests;
 
 public class PaymentsControllerTests
 {
@@ -61,4 +61,8 @@ public class PaymentsControllerTests
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
+
+
+    // TODO:create post requests
+
 }

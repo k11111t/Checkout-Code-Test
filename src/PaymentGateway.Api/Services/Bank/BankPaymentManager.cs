@@ -27,16 +27,33 @@ public class BankPaymentManager : IBankPaymentManager {
     {
         try
         {
+            if (request == null)
+            {
+                _logger.LogError("Request cannot be null");
+                return null;
+            }
+
             // build request
-            HttpRequestMessage bankRequestMessage = _requestBuilder.BuildRequest(request);
+            HttpRequestMessage? bankRequestMessage = _requestBuilder.BuildRequest(request);
+            if(bankRequestMessage == null)
+            {
+                _logger.LogError("Failed to create http request");
+                return null;
+            }
 
             // send request to the bank
             HttpResponseMessage bankResponseMessage = await _httpClient.SendAsync(bankRequestMessage);
-
-            if(bankResponseMessage.StatusCode != System.Net.HttpStatusCode.OK) 
+            
+            if(bankResponseMessage.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable) 
+            {
+                _logger.LogError("Bank service is unavailable");
+                return null;
+            }
+            if(bankResponseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest) 
             {
                 _logger.LogWarning("Bank failed to authorise payment");
                 return new BankPaymentResponse() {
+                    AuthorizationCode = "",
                     Authorized = false
                 };
             }
@@ -59,12 +76,12 @@ public class BankPaymentManager : IBankPaymentManager {
         }
         catch (JsonException ex)
         {
-            _logger.LogError(ex, "Failed to deserialize bank response.");
+            _logger.LogError(ex, "Failed to deserialize bank response");
             return null;
         }
         catch (Exception ex) 
         {
-            _logger.LogError(ex, "Something went wrong");
+            _logger.LogError(ex, "Bank failed to process payment");
             return null;
         }        
     }
