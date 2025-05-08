@@ -13,6 +13,10 @@ public class PaymentValidationManager : IValidatorManager<PostPaymentRequest>
     public bool Validate(PostPaymentRequest request, out Dictionary<string, string> errorMessages)
     {
         errorMessages = new();
+
+        if(request == null)
+            return false;
+
         foreach (var validator in _validators) {
             if(!validator.Validate(request, out var errorDictionary))
             {

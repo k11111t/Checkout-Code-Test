@@ -1,7 +1,7 @@
 using PaymentGateway.Api.Models.Data;
 using PaymentGateway.Api.Services.PaymentGateway;
 
-namespace PaymentGateway.Api.Tests.UnitTests
+namespace PaymentGateway.Api.Tests.Tests
 {
     public class PaymentsRepositoryTests
     {

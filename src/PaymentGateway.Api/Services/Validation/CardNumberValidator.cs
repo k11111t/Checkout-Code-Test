@@ -6,6 +6,13 @@ public class CardNumberValidator : IValidator<PostPaymentRequest>
     public bool Validate(PostPaymentRequest request, out Dictionary<string,string> errorDictionary)
     {
         errorDictionary = new();
+        
+        if(request == null)
+        {
+            errorDictionary["CardNumber"] = "Card number must be between 14 and 19 digits.";
+            return false;
+        }
+        
         if (request.CardNumber == null || request.CardNumber.Length < 14 || request.CardNumber.Length > 19 || !CheckAllDigits(request.CardNumber))
         {
             errorDictionary["CardNumber"] = "Card number must be between 14 and 19 digits.";

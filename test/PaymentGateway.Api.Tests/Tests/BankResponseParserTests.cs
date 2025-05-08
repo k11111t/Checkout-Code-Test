@@ -8,9 +8,11 @@ public class BankResponseParserTests
 {
     readonly Mock<ILogger<BankResponseParser>> logger = new ();
 
-    BankResponseParser CreateBankResponseParser()
+    readonly BankResponseParser bankResponseParser;
+
+    public BankResponseParserTests()
     {
-        return new BankResponseParser(logger.Object);
+        bankResponseParser = new BankResponseParser(logger.Object);
     }
 
     [Fact]
@@ -27,8 +29,6 @@ public class BankResponseParserTests
             StatusCode = System.Net.HttpStatusCode.OK,
             Content = new StringContent(JsonSerializer.Serialize(expectedResponse))
         };
-        
-        BankResponseParser bankResponseParser = CreateBankResponseParser();
 
         // act
         var result = await bankResponseParser.ParseResponseAsync(httpResponse);
@@ -48,8 +48,6 @@ public class BankResponseParserTests
             StatusCode = System.Net.HttpStatusCode.OK,
             Content = new StringContent("jibberish{}")
         };
-        
-        BankResponseParser bankResponseParser = CreateBankResponseParser();
 
         // act
         var result = await bankResponseParser.ParseResponseAsync(httpResponse);
@@ -62,7 +60,6 @@ public class BankResponseParserTests
     public async Task ParseResponseAsync_ReturnsNullOnInvalidInput()
     {
         // arrange
-        BankResponseParser bankResponseParser = CreateBankResponseParser();
 
         // act
         var result = await bankResponseParser.ParseResponseAsync(null);
