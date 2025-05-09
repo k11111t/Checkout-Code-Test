@@ -1,11 +1,13 @@
-﻿using PaymentGateway.Api.Interfaces;
+﻿using System.Collections.Concurrent;
+
+using PaymentGateway.Api.Interfaces;
 using PaymentGateway.Api.Models.Data;
 
 namespace PaymentGateway.Api.Services.PaymentGateway;
 
 public class PaymentsRepository : IRepository<PaymentRecord>
 {
-    public List<PaymentRecord> Payments = new();
+    public ConcurrentBag<PaymentRecord> Payments = new();
     
     public void Add(PaymentRecord payment)
     {

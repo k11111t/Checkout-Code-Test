@@ -42,7 +42,7 @@ public static class PaymentMapper
             ExpiryDate =  $"{request.ExpiryMonth}/{request.ExpiryYear}",
             Currency = request.Currency ?? string.Empty,
             Amount = request.Amount,
-            Cvv = request.Cvv.ToString()
+            Cvv = request.Cvv.ToString("D3")
         };
     }
 

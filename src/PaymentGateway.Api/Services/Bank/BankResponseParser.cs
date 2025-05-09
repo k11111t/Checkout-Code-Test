@@ -18,8 +18,7 @@ public class BankResponseParser : IBankResponseParser
             if (httpResponse?.Content == null)
                 return null;
                 
-            Stream responseStream = await httpResponse.Content.ReadAsStreamAsync();
-            BankPaymentResponse? bankResponseObj = await JsonSerializer.DeserializeAsync<BankPaymentResponse>(responseStream);
+            BankPaymentResponse? bankResponseObj = await httpResponse.Content.ReadFromJsonAsync<BankPaymentResponse>();
 
             return bankResponseObj;
         }

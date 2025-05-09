@@ -16,11 +16,35 @@ public class BankResponseParserTests
     }
 
     [Fact]
-    public async Task ParseResponseAsync_ReturnsValidResponseOnValidInput()
+    public async Task ParseResponseAsync_ReturnsValidResponseOnValidInputTrue()
     {
         // arrange
         var expectedResponse = new BankPaymentResponse(){
             Authorized = true,
+            AuthorizationCode = "1234"
+        };
+
+        var httpResponse = new HttpResponseMessage()
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            Content = new StringContent(JsonSerializer.Serialize(expectedResponse))
+        };
+
+        // act
+        var result = await bankResponseParser.ParseResponseAsync(httpResponse);
+
+        // assert
+        Assert.NotNull(result);
+        Assert.Equal(expectedResponse.AuthorizationCode, result.AuthorizationCode);
+        Assert.Equal(expectedResponse.Authorized, result.Authorized);
+    }
+
+    [Fact]
+    public async Task ParseResponseAsync_ReturnsValidResponseOnValidInputFalse()
+    {
+        // arrange
+        var expectedResponse = new BankPaymentResponse(){
+            Authorized = false,
             AuthorizationCode = "1234"
         };
 

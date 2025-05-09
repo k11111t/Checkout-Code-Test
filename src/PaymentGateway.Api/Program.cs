@@ -16,9 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-builder.Logging.AddDebug(); 
 
 builder.Services.Configure<PaymentGatewayConfiguration>(
     builder.Configuration.GetSection("PaymentGatewayConfig"));
@@ -26,20 +24,21 @@ builder.Services.Configure<PaymentGatewayConfiguration>(
 builder.Services.AddSingleton<IPaymentGatewayConfiguration>(sp =>
     sp.GetRequiredService<IOptions<PaymentGatewayConfiguration>>().Value);
 
-builder.Services.AddScoped<IValidator<PostPaymentRequest>, AmountValidator>();
-builder.Services.AddScoped<IValidator<PostPaymentRequest>, CardNumberValidator>();
-builder.Services.AddScoped<IValidator<PostPaymentRequest>, CurrencyValidator>();
-builder.Services.AddScoped<IValidator<PostPaymentRequest>, CvvValidator>();
-builder.Services.AddScoped<IValidator<PostPaymentRequest>, ExpiryDateValidator>();
-builder.Services.AddScoped<IValidator<PostPaymentRequest>, ExpiryMonthValidator>();
-builder.Services.AddScoped<IValidator<PostPaymentRequest>, ExpiryYearValidator>();
-
-builder.Services.AddScoped<IValidatorManager<PostPaymentRequest>, PaymentValidationManager>();
-
 builder.Services.AddSingleton<IRepository<PaymentRecord>, PaymentsRepository>();
 
-builder.Services.AddScoped<IBankRequestBuilder, BankRequestBuilder>();
-builder.Services.AddScoped<IBankResponseParser, BankResponseParser>();
+builder.Services.AddTransient<IValidator<PostPaymentRequest>, AmountValidator>();
+builder.Services.AddTransient<IValidator<PostPaymentRequest>, CardNumberValidator>();
+builder.Services.AddTransient<IValidator<PostPaymentRequest>, CurrencyValidator>();
+builder.Services.AddTransient<IValidator<PostPaymentRequest>, CvvValidator>();
+builder.Services.AddTransient<IValidator<PostPaymentRequest>, ExpiryDateValidator>();
+builder.Services.AddTransient<IValidator<PostPaymentRequest>, ExpiryMonthValidator>();
+builder.Services.AddTransient<IValidator<PostPaymentRequest>, ExpiryYearValidator>();
+
+builder.Services.AddTransient<IValidatorManager<PostPaymentRequest>, PaymentValidationManager>();
+
+
+builder.Services.AddTransient<IBankRequestBuilder, BankRequestBuilder>();
+builder.Services.AddTransient<IBankResponseParser, BankResponseParser>();
 builder.Services.AddHttpClient<IBankPaymentManager, BankPaymentManager>(client =>
     {
         client.Timeout = TimeSpan.FromSeconds(10);

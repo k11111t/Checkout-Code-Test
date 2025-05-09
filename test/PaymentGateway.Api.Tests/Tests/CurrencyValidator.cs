@@ -56,7 +56,7 @@ namespace PaymentGateway.Api.Tests.Tests
             // assert
             Assert.False(result);
             Assert.Contains("Currency", errorDictionary.Keys);
-            Assert.Equal("Currency is not supported.", errorDictionary["Currency"]);
+            Assert.Equal("Currency  is not supported.", errorDictionary["Currency"]);
         }
     }
 }

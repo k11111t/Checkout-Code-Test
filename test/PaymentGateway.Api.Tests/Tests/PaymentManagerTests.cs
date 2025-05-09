@@ -70,26 +70,26 @@ public class PaymentManagerTests
     [Fact]
     public async Task GetPaymentAsync_ReturnsResponseOnPaymentExists()
     {
-        var id = Guid.NewGuid();
-        repository.Setup(x => x.Get(id)).Returns(new PaymentRecord { Id = id });
+        var expectedId = Guid.NewGuid();
+        repository.Setup(x => x.Get(expectedId)).Returns(new PaymentRecord { Id = expectedId });
 
         var manager = CreatePaymentManager();
 
-        var result = await manager.GetPaymentAsync(id);
+        var result = await manager.GetPaymentAsync(expectedId);
 
         Assert.NotNull(result);
-        Assert.Equal(id, result.Id);
+        Assert.Equal(expectedId, result.Id);
     }
 
     [Fact]
     public async Task GetPaymentAsync_ReturnsNullOnPaymentMissing()
     {
-        var id = Guid.NewGuid();
-        repository.Setup(x => x.Get(id)).Returns((PaymentRecord?)null);
+        var expectedId = Guid.NewGuid();
+        repository.Setup(x => x.Get(expectedId)).Returns((PaymentRecord?)null);
 
         var manager = CreatePaymentManager();
 
-        var result = await manager.GetPaymentAsync(id);
+        var result = await manager.GetPaymentAsync(expectedId);
 
         Assert.Null(result);
     }
