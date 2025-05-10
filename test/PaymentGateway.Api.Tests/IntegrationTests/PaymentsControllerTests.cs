@@ -137,7 +137,7 @@ public class PaymentsControllerTests
     }
 
     [Fact]
-    public async Task PostPaymentAsync_ReturnsOK_OnPaymentValid_Robust()
+    public async Task PostPaymentAsync_ReturnsOK_OnPaymentValid_MockServicesInPaymentManager()
     {
         // Arrange
         var payment = new PostPaymentRequest
@@ -233,5 +233,87 @@ public class PaymentsControllerTests
         Assert.Equal(expectedResponse.CardNumberLastFour, actualResponse.CardNumberLastFour);
         Assert.Equal(expectedResponse.Status, actualResponse.Status);
     }
+
+    [Fact]
+    public async Task PostPaymentAsync_ReturnsOK_OnPaymentValid_MockBankManagerAndValidators()
+    {
+        // Arrange
+        var payment = new PostPaymentRequest
+        {
+            ExpiryYear = DateTime.Now.Year+1,
+            ExpiryMonth = 12,
+            Amount = _random.Next(1, 10000),
+            CardNumber = "12341234111155511",
+            Currency = "GBP"
+        };
+
+        var id = Guid.NewGuid();
+        var expectedResponse = new PostPaymentResponse
+        {
+            Id = id,
+            ExpiryYear = payment.ExpiryYear,
+            ExpiryMonth = payment.ExpiryMonth,
+            Amount = payment.Amount,
+            Currency = payment.Currency,
+            CardNumberLastFour = 5511,
+            Status = Models.PaymentStatus.Authorized
+        };
+
+        // Mock dependencies
+        var repository = new Mock<IRepository<PaymentRecord>>();
+        var validatorManager = new Mock<IValidatorManager<PostPaymentRequest>>();
+        var bankManager = new Mock<IBankPaymentManager>();
+        var bankMapper = new BankPaymentMapper();
+        var paymentRecordMapper = new PaymentRecordMapper();
+        var httpMapper = new HttpPaymentMapper();
+        var logger = new Mock<ILogger<PaymentManager>>();
+
+        validatorManager.Setup(x => x.Validate(It.IsAny<PostPaymentRequest>(), out It.Ref<Dictionary<string,string>>.IsAny))
+            .Returns(true);
+        bankManager.Setup(x => x.ProcessBankPaymentAsync(It.IsAny<BankPaymentRequest>()))
+            .ReturnsAsync(new BankPaymentResponse { Authorized = true });
+
+        var webApplicationFactory = new WebApplicationFactory<Program>();
+            
+        var client = webApplicationFactory.WithWebHostBuilder(builder =>
+            builder.ConfigureServices(services => {
+                services.AddSingleton(repository.Object);
+                services.AddSingleton(validatorManager.Object);
+                services.AddSingleton(bankManager.Object);
+                services.AddSingleton(bankMapper);
+                services.AddSingleton(httpMapper);
+                services.AddSingleton(paymentRecordMapper);
+                services.AddSingleton(logger.Object);
+                services.AddSingleton<IPaymentManager, PaymentManager>();
+            })).CreateClient();
+        
+        StringContent content = new StringContent(
+            JsonSerializer.Serialize(payment), 
+            Encoding.UTF8, 
+            "application/json"
+        );
+    
+        HttpRequestMessage httpRequest = new(HttpMethod.Post, "/api/Payments/")
+        {
+            Content = content
+        };
+        
+        // Act
+        var response = await client.SendAsync(httpRequest);
+        var actualResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>();
+        
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(response.Content);
+        Assert.Equal(expectedResponse.Currency, actualResponse.Currency);
+        Assert.Equal(expectedResponse.Amount, actualResponse.Amount);
+        Assert.Equal(expectedResponse.ExpiryYear, actualResponse.ExpiryYear);
+        Assert.Equal(expectedResponse.ExpiryMonth, actualResponse.ExpiryMonth);
+        Assert.Equal(expectedResponse.CardNumberLastFour, actualResponse.CardNumberLastFour);
+        Assert.Equal(expectedResponse.Status, actualResponse.Status);
+    }
+
 
 }
