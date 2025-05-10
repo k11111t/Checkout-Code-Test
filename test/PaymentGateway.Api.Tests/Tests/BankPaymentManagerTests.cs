@@ -10,25 +10,24 @@ using PaymentGateway.Api.Services.Bank;
 namespace PaymentGateway.Api.Tests.Tests;
 public class BankPaymentManagerTest
 {
+    readonly Mock<HttpMessageHandler> httpHandler = new();
+    readonly Mock<ILogger<BankPaymentManager>> logger = new();
+    readonly Mock<IBankRequestBuilder> requestBuilder = new();
+    readonly Mock<IBankResponseParser> responseParser = new();
+
     readonly BankPaymentRequest DummyRequest = new(){
-            CardNumber = "DUMMY",
-            Amount = 1,
-            Currency = "DUMMY",
-            Cvv = "DUMMY",
-            ExpiryDate = "DUMMY"
-        };
+        CardNumber = "DUMMY",
+        Amount = 1,
+        Currency = "DUMMY",
+        Cvv = "DUMMY",
+        ExpiryDate = "DUMMY"
+    };
 
     [Fact]
-    public async Task ProcessBankPaymentAsync_ReturnsBankResponseOnValidRequest()
+    public async Task ProcessBankPaymentAsync_ReturnsBankResponse_OnValidRequest()
     {
-        // arrange
-        var httpHandler = new Mock<HttpMessageHandler>();
-        var logger = new Mock<ILogger<BankPaymentManager>>();
-        var requestBuilder = new Mock<IBankRequestBuilder>();
-        var responseParser = new Mock<IBankResponseParser>();
-
+        // Arrange
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, "http://testuri.com");
-
         var httpResponse = new HttpResponseMessage(){
             StatusCode = HttpStatusCode.OK
         };
@@ -68,13 +67,9 @@ public class BankPaymentManagerTest
     }
 
     [Fact]
-    public async Task ProcessBankPaymentAsync_ReturnsNullOnRequestNull()
+    public async Task ProcessBankPaymentAsync_ReturnsNull_WhenRequestNull()
     {
-        // arrange
-        var httpHandler = new Mock<HttpMessageHandler>();
-        var logger = new Mock<ILogger<BankPaymentManager>>();
-        var requestBuilder = new Mock<IBankRequestBuilder>();
-        var responseParser = new Mock<IBankResponseParser>();
+        // Arrange
         var client = new Mock<HttpClient>(httpHandler.Object);
 
         BankPaymentManager bankManager = new
@@ -93,13 +88,9 @@ public class BankPaymentManagerTest
     }
 
     [Fact]
-    public async Task ProcessBankPaymentAsync_ReturnsNullOnRequestBuilderReturnsNull()
+    public async Task ProcessBankPaymentAsync_ReturnsNull_WhenRequestBuilderReturnsNull()
     {
-        // arrange
-        var httpHandler = new Mock<HttpMessageHandler>();
-        var logger = new Mock<ILogger<BankPaymentManager>>();
-        var requestBuilder = new Mock<IBankRequestBuilder>();
-        var responseParser = new Mock<IBankResponseParser>();
+        // Arrange
         var client = new Mock<HttpClient>(httpHandler.Object);
 
         requestBuilder.Setup(x => x.BuildRequest(It.IsAny<BankPaymentRequest>())).Returns((HttpRequestMessage?)null);
@@ -120,13 +111,9 @@ public class BankPaymentManagerTest
     }
 
     [Fact]
-    public async Task ProcessBankPaymentAsync_ReturnsNullOnInvalidHttpRequest()
+    public async Task ProcessBankPaymentAsync_ReturnsNull_WhenRequestBuilderReturnsInvalidHttpRequest()
     {
-        // arrange
-        var httpHandler = new Mock<HttpMessageHandler>();
-        var logger = new Mock<ILogger<BankPaymentManager>>();
-        var requestBuilder = new Mock<IBankRequestBuilder>();
-        var responseParser = new Mock<IBankResponseParser>();
+        // Arrange
         var client = new Mock<HttpClient>(httpHandler.Object);
 
         requestBuilder.Setup(x => x.BuildRequest(It.IsAny<BankPaymentRequest>())).Returns(new HttpRequestMessage());
@@ -147,14 +134,9 @@ public class BankPaymentManagerTest
     }
 
     [Fact]
-    public async Task ProcessBankPaymentAsync_ReturnsNullOn503HttpResponse()
+    public async Task ProcessBankPaymentAsync_ReturnsNull_OnServiceUnavailableHttpResponse()
     {
-        // arrange
-        var httpHandler = new Mock<HttpMessageHandler>();
-        var logger = new Mock<ILogger<BankPaymentManager>>();
-        var requestBuilder = new Mock<IBankRequestBuilder>();
-        var responseParser = new Mock<IBankResponseParser>();
-
+        // Arrange
         var httpResponse = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
 
         httpHandler.Protected()
@@ -184,14 +166,9 @@ public class BankPaymentManagerTest
     }
 
     [Fact]
-    public async Task ProcessBankPaymentAsync_ReturnsDeclinedPaymentOn400HttpResponse()
+    public async Task ProcessBankPaymentAsync_ReturnsDeclinedPayment_OnBadRequestHttpResponse()
     {
-        // arrange
-        var httpHandler = new Mock<HttpMessageHandler>();
-        var logger = new Mock<ILogger<BankPaymentManager>>();
-        var requestBuilder = new Mock<IBankRequestBuilder>();
-        var responseParser = new Mock<IBankResponseParser>();
-
+        // Arrange
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, "http://testuri.com");
         var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
 
@@ -224,14 +201,9 @@ public class BankPaymentManagerTest
     }
 
     [Fact]
-    public async Task ProcessBankPaymentAsync_ReturnsNullOnRequestParserReturnsNull()
+    public async Task ProcessBankPaymentAsync_ReturnsNull_OnRequestParserReturnsNull()
     {
-        // arrange
-        var httpHandler = new Mock<HttpMessageHandler>();
-        var logger = new Mock<ILogger<BankPaymentManager>>();
-        var requestBuilder = new Mock<IBankRequestBuilder>();
-        var responseParser = new Mock<IBankResponseParser>();
-
+        // Arrange
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, "http://testuri.com");
 
         var httpResponse = new HttpResponseMessage(){

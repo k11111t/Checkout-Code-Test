@@ -53,7 +53,7 @@ public class PaymentsControllerTests
     }
 
     [Fact]
-    public async Task GetPaymentAsync_Returns404IfPaymentNotFound()
+    public async Task GetPaymentAsync_ReturnsNotFound_WhenPaymentMissing()
     {
         // Arrange
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
@@ -68,7 +68,7 @@ public class PaymentsControllerTests
 
 
     [Fact]
-    public async Task PostPaymentAsync_Returns200IfPaymentValid()
+    public async Task PostPaymentAsync_ReturnsOK_OnPaymentValid()
     {
         // Arrange
         var payment = new PostPaymentRequest
@@ -82,12 +82,13 @@ public class PaymentsControllerTests
 
         var expectedResponse = new PostPaymentResponse
         {
-            Id = new Guid(),
+            Id = Guid.NewGuid(),
             ExpiryYear = 1234,
             ExpiryMonth = 1234,
             Amount = 1234,
             Currency = "GBP",
-            CardNumberLastFour = 1234
+            CardNumberLastFour = 1234,
+            Status = Models.PaymentStatus.Authorized
         };
 
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
@@ -127,6 +128,7 @@ public class PaymentsControllerTests
         Assert.Equal(expectedResponse.ExpiryYear, actualResponse.ExpiryYear);
         Assert.Equal(expectedResponse.ExpiryMonth, actualResponse.ExpiryMonth);
         Assert.Equal(expectedResponse.CardNumberLastFour, actualResponse.CardNumberLastFour);
+        Assert.Equal(expectedResponse.Status, actualResponse.Status);
     }
 
 }

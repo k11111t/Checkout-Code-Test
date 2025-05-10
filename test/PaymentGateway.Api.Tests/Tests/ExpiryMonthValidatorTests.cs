@@ -12,45 +12,45 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenExpiryMonthLessThanOne()
+        public void Validate_ReturnsFalse_WhenExpiryMonthLessThanOne()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { ExpiryMonth = 0 };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("ExpiryMonth", errorDictionary.Keys);
             Assert.Equal("Expiry month must be between 1 and 12", errorDictionary["ExpiryMonth"]);
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenExpiryMonthIsGreaterThanTwelve()
+        public void Validate_ReturnsFalse_WhenExpiryMonthIsGreaterThanTwelve()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { ExpiryMonth = 13 };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("ExpiryMonth", errorDictionary.Keys);
             Assert.Equal("Expiry month must be between 1 and 12", errorDictionary["ExpiryMonth"]);
         }
 
         [Fact]
-        public void Validate_ReturnsTrueWhenExpiryMonthValid()
+        public void Validate_ReturnsTrue_WhenExpiryMonthValid()
         {
-            // arrange
-            var request = new PostPaymentRequest { ExpiryMonth = 5 };  // Valid expiry month (between 1 and 12)
+            // Arrange
+            var request = new PostPaymentRequest { ExpiryMonth = 5 };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.True(result);
             Assert.Empty(errorDictionary);
         }

@@ -30,7 +30,7 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Get_ReturnsNullWhenPaymentMissing()
+        public void Get_ReturnsNull_WhenPaymentMissing()
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -43,7 +43,7 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Get_ReturnsPaymentWhenPaymentExists()
+        public void Get_ReturnsPayment_WhenPaymentExists()
         {
             // Arrange
             var expectedPayment = new PaymentRecord { Id = Guid.NewGuid() };
@@ -58,7 +58,7 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Add_ReturnsCorrectPaymentWehnAddingMultiplePayments()
+        public void Add_ReturnsCorrectPayment_WehnAddingMultiplePayments()
         {
             // Arrange
             var expectedPayment1 = new PaymentRecord { Id = Guid.NewGuid() };

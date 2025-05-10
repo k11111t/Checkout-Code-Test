@@ -16,44 +16,59 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenCurrencyNotSupported()
+        public void Validate_ReturnsFalse_WhenCurrencyNotSupported()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { Currency = "CZK" };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("Currency", errorDictionary.Keys);
             Assert.Equal("Currency CZK is not supported.", errorDictionary["Currency"]);
         }
 
         [Fact]
-        public void Validate_ReturnsTrueWhenCurrencySupported()
+        public void Validate_ReturnsTrue_WhenCurrencySupported()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { Currency = "USD" };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.True(result);
             Assert.Empty(errorDictionary);
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenCurrencyNull()
+        public void Validate_ReturnsFalse_WhenCurrencyNull()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { Currency = null };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
+            Assert.False(result);
+            Assert.Contains("Currency", errorDictionary.Keys);
+            Assert.Equal("Currency  is not supported.", errorDictionary["Currency"]);
+        }
+
+        [Fact]
+        public void Validate_ReturnsFalse_WhenCurrencyEmpty()
+        {
+            // Arrange
+            var request = new PostPaymentRequest { Currency = string.Empty };
+
+            // Act
+            var result = validator.Validate(request, out var errorDictionary);
+
+            // Assert
             Assert.False(result);
             Assert.Contains("Currency", errorDictionary.Keys);
             Assert.Equal("Currency  is not supported.", errorDictionary["Currency"]);

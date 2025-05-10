@@ -12,7 +12,7 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenAmountZero()
+        public void Validate_ReturnsFalse_WhenAmountZero()
         {
             // arrange
             var request = new PostPaymentRequest { Amount = 0 };
@@ -27,7 +27,7 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenAmountIsNegative()
+        public void Validate_ReturnsFalse_WhenAmountIsNegative()
         {
             // arrange
             var request = new PostPaymentRequest { Amount = -10 };
@@ -42,7 +42,7 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsTrueWhenAmountIsPositive()
+        public void Validate_ReturnsTrue_WhenAmountIsPositive()
         {
             // arrange
             var request = new PostPaymentRequest { Amount = 10 };

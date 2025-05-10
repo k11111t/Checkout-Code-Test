@@ -14,7 +14,7 @@ public class BankRequestBuilderTests
     }
 
     [Fact]
-    public async Task BuildRequest_ReturnsValidRequestOnValidInput()
+    public async Task BuildRequest_ReturnsValidRequest_OnValidInput()
     {
         // arrange
         var request = new BankPaymentRequest(){
@@ -41,7 +41,7 @@ public class BankRequestBuilderTests
     }
 
     [Fact]
-    public void BuildRequest_ReturnsNullOnNullInput()
+    public void BuildRequest_ReturnsNull_OnNullInput()
     {
         //assert
         var bankRequestBuilder = CreateBankRequestBuilder();

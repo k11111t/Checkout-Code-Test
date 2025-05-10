@@ -12,75 +12,75 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenCardNumberIsNull()
+        public void Validate_ReturnsFalse_WhenCardNumberIsNull()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { CardNumber = null };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("CardNumber", errorDictionary.Keys);
             Assert.Equal("Card number must be between 14 and 19 digits.", errorDictionary["CardNumber"]);
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenCardNumberTooShort()
+        public void Validate_ReturnsFalse_WhenCardNumberTooShort()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { CardNumber = "123456789" };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("CardNumber", errorDictionary.Keys);
             Assert.Equal("Card number must be between 14 and 19 digits.", errorDictionary["CardNumber"]);
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenCardNumberTooLong()
+        public void Validate_ReturnsFalse_WhenCardNumberTooLong()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { CardNumber = "12345678901234567890" };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("CardNumber", errorDictionary.Keys);
             Assert.Equal("Card number must be between 14 and 19 digits.", errorDictionary["CardNumber"]);
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenCardNumberContainsNonNumericals()
+        public void Validate_ReturnsFalse_WhenCardNumberContainsNonNumericals()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { CardNumber = "12345A7890123" };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("CardNumber", errorDictionary.Keys);
             Assert.Equal("Card number must be between 14 and 19 digits.", errorDictionary["CardNumber"]);
         }
 
         [Fact]
-        public void Validate_ReturnsTrueWhenCardNumberIsValid()
+        public void Validate_ReturnsTrue_WhenCardNumberIsValid()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { CardNumber = "1234567891111111" };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.True(result);
             Assert.Empty(errorDictionary);
         }

@@ -14,30 +14,30 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenExpiryYearInThePast()
+        public void Validate_ReturnsFalse_WhenExpiryYearInThePast()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { ExpiryYear = DateTime.Now.Year - 1 };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("ExpiryYear", errorDictionary.Keys);
             Assert.Equal("Expiry year must be in the future", errorDictionary["ExpiryYear"]);
         }
 
         [Fact]
-        public void Validate_ReturnsTrueWhenExpiryYearInTheFuture()
+        public void Validate_ReturnsTrue_WhenExpiryYearInTheFuture()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { ExpiryYear = DateTime.Now.Year + 1 };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.True(result);
             Assert.Empty(errorDictionary);
         }

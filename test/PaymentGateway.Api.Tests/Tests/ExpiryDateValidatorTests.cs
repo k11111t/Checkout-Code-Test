@@ -14,15 +14,15 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenExpiryYearInThePast()
+        public void Validate_ReturnsFalse_WhenExpiryYearInThePast()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { ExpiryYear = DateTime.Now.Year - 1, ExpiryMonth = DateTime.Now.Month };
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("ExpiryYear", errorDictionary.Keys);
             Assert.Equal("Expiry year must be in the future", errorDictionary["ExpiryYear"]);
@@ -31,15 +31,15 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsFalseWhenExpiryMonthInThePastOfCurrentYear()
+        public void Validate_ReturnsFalse_WhenExpiryMonthInThePastInCurrentYear()
         {
-            // arrange
+            // Arrange
             var request = new PostPaymentRequest { ExpiryYear = DateTime.Now.Year, ExpiryMonth = DateTime.Now.Month - 1 }; 
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.False(result);
             Assert.Contains("ExpiryYear", errorDictionary.Keys);
             Assert.Equal("Expiry year must be in the future", errorDictionary["ExpiryYear"]);
@@ -48,15 +48,15 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
-        public void Validate_ReturnsTrueWhenExpiryDateInTheFuture()
+        public void Validate_ReturnsTrue_WhenExpiryDateInTheFuture()
         {
-            // arrange
-            var request = new PostPaymentRequest { ExpiryYear = DateTime.Now.Year, ExpiryMonth = DateTime.Now.Month+1 }; 
+            // Arrange
+            var request = new PostPaymentRequest { ExpiryYear = DateTime.Now.Year, ExpiryMonth = DateTime.Now.Month + 1 }; 
 
-            // act
+            // Act
             var result = validator.Validate(request, out var errorDictionary);
 
-            // assert
+            // Assert
             Assert.True(result);
             Assert.Empty(errorDictionary);
         }

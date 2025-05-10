@@ -14,7 +14,7 @@ public class CurrencyValidator : IValidator<PostPaymentRequest>
 
         if(request == null)
         {
-            errorDictionary["Currency"] = $"Currency {request.Currency} is not supported.";
+            errorDictionary["Currency"] = $"Currency is not supported.";
             return false;
         }
 

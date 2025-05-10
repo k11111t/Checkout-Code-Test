@@ -16,9 +16,9 @@ public class BankResponseParserTests
     }
 
     [Fact]
-    public async Task ParseResponseAsync_ReturnsValidResponseOnValidInputTrue()
+    public async Task ParseResponseAsync_ReturnsValidResponse_OnValidTrueInput()
     {
-        // arrange
+        // Arrange
         var expectedResponse = new BankPaymentResponse(){
             Authorized = true,
             AuthorizationCode = "1234"
@@ -30,19 +30,19 @@ public class BankResponseParserTests
             Content = new StringContent(JsonSerializer.Serialize(expectedResponse))
         };
 
-        // act
+        // Act
         var result = await bankResponseParser.ParseResponseAsync(httpResponse);
 
-        // assert
+        // Assert
         Assert.NotNull(result);
         Assert.Equal(expectedResponse.AuthorizationCode, result.AuthorizationCode);
         Assert.Equal(expectedResponse.Authorized, result.Authorized);
     }
 
     [Fact]
-    public async Task ParseResponseAsync_ReturnsValidResponseOnValidInputFalse()
+    public async Task ParseResponseAsync_ReturnsValidResponse_OnValidFalseInput()
     {
-        // arrange
+        // Arrange
         var expectedResponse = new BankPaymentResponse(){
             Authorized = false,
             AuthorizationCode = "1234"
@@ -54,41 +54,41 @@ public class BankResponseParserTests
             Content = new StringContent(JsonSerializer.Serialize(expectedResponse))
         };
 
-        // act
+        // Act
         var result = await bankResponseParser.ParseResponseAsync(httpResponse);
 
-        // assert
+        // Assert
         Assert.NotNull(result);
         Assert.Equal(expectedResponse.AuthorizationCode, result.AuthorizationCode);
         Assert.Equal(expectedResponse.Authorized, result.Authorized);
     }
 
     [Fact]
-    public async Task ParseResponseAsync_ReturnsNullOnInvalidContent()
+    public async Task ParseResponseAsync_ReturnsNull_OnInvalidContent()
     {
-        // arrange
+        // Arrange
         var httpResponse = new HttpResponseMessage()
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             Content = new StringContent("jibberish{}")
         };
 
-        // act
+        // Act
         var result = await bankResponseParser.ParseResponseAsync(httpResponse);
 
-        // assert
+        // Assert
         Assert.Null(result);
     }
     
     [Fact]
-    public async Task ParseResponseAsync_ReturnsNullOnInvalidInput()
+    public async Task ParseResponseAsync_ReturnsNull_OnInvalidInput()
     {
-        // arrange
+        // Arrange
 
-        // act
+        // Act
         var result = await bankResponseParser.ParseResponseAsync(null);
 
-        // assert
+        // Assert
         Assert.Null(result);
     }
 }

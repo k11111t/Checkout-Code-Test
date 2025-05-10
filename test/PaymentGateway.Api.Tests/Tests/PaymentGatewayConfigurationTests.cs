@@ -6,10 +6,10 @@ public class PaymentGatewayConfigurationTests
     [Fact]
     public void Config_ReturnEmptyConfigOnCreate()
     {
-        //act
+        // Act
         PaymentGatewayConfiguration paymentGatewayConfiguration = new();
 
-        //assert
+        // Assert
         Assert.NotNull(paymentGatewayConfiguration.BankServiceUrl);
         Assert.NotNull(paymentGatewayConfiguration.SupportedCurrencies);
     }
@@ -17,18 +17,18 @@ public class PaymentGatewayConfigurationTests
     [Fact]
     public void Config_ReturnCorrectValuesOnAssignment()
     {
-        //assert
+        // Assert
         PaymentGatewayConfiguration expected = new() {
             BankServiceUrl = "url",
             SupportedCurrencies = ["EUR", "CZK"]
         };
         PaymentGatewayConfiguration paymentGatewayConfiguration = new();
 
-        //act
+        // Act
         paymentGatewayConfiguration.BankServiceUrl = expected.BankServiceUrl;
         paymentGatewayConfiguration.SupportedCurrencies = expected.SupportedCurrencies;
 
-        //assert
+        // Assert
         Assert.Equal(expected.BankServiceUrl, paymentGatewayConfiguration.BankServiceUrl);
         Assert.Equal(expected.SupportedCurrencies, paymentGatewayConfiguration.SupportedCurrencies);
     }
