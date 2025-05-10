@@ -4,6 +4,7 @@ using PaymentGateway.Api.Interfaces;
 using PaymentGateway.Api.Models.Data;
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Services.Bank;
+using PaymentGateway.Api.Services.Data;
 using PaymentGateway.Api.Services.PaymentGateway;
 using PaymentGateway.Api.Services.Validation;
 
@@ -35,6 +36,11 @@ builder.Services.AddTransient<IValidator<PostPaymentRequest>, ExpiryMonthValidat
 builder.Services.AddTransient<IValidator<PostPaymentRequest>, ExpiryYearValidator>();
 
 builder.Services.AddTransient<IValidatorManager<PostPaymentRequest>, PaymentValidationManager>();
+
+
+builder.Services.AddTransient<IBankPaymentMapper, BankPaymentMapper>();
+builder.Services.AddTransient<IHttpPaymentMapper, HttpPaymentMapper>();
+builder.Services.AddTransient<IPaymentRecordMapper, PaymentRecordMapper>();
 
 
 builder.Services.AddTransient<IBankRequestBuilder, BankRequestBuilder>();

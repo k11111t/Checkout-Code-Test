@@ -6,6 +6,7 @@ using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Api.Interfaces;
 using PaymentGateway.Api.Services.PaymentGateway;
+using PaymentGateway.Api.Services.Data;
 
 namespace PaymentGateway.Api.Tests.Tests;
 public class PaymentManagerTests
@@ -15,12 +16,19 @@ public class PaymentManagerTests
     readonly Mock<IBankPaymentManager> bankManager = new();
     readonly Mock<ILogger<PaymentManager>> logger = new();
 
+    readonly HttpPaymentMapper httpPaymentRequestMapper = new();
+    readonly BankPaymentMapper bankPaymentMapper = new();
+    readonly PaymentRecordMapper paymentRecordMapper = new();
+
     PaymentManager CreatePaymentManager()
     {
         return new PaymentManager(
             repository.Object, 
             validator.Object, 
             bankManager.Object, 
+            bankPaymentMapper,
+            paymentRecordMapper,
+            httpPaymentRequestMapper,
             logger.Object
         );
     }
