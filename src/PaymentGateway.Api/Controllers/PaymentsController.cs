@@ -23,7 +23,7 @@ public class PaymentsController : Controller
         if(response.Status == PaymentStatus.Rejected)
             return BadRequest(response);
 
-        return Ok(response);
+        return new OkObjectResult(response);
     }
 
     [HttpGet("{id:guid}")]
@@ -32,10 +32,8 @@ public class PaymentsController : Controller
         GetPaymentResponse? response = await _paymentManager.GetPaymentAsync(id);
 
         if(response == null)
-        {
-            return NotFound();
-        }
+            return new NotFoundResult();
 
-        return Ok(response);
+        return new OkObjectResult(response);
     }
 }

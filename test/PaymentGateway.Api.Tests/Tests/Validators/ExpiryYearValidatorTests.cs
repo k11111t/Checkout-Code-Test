@@ -14,6 +14,21 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
+        public void Validate_ReturnsFalse_WhenInputNull()
+        {
+            // arrange
+            PostPaymentRequest request = null;
+
+            // act
+            var result = validator.Validate(request, out var errorDictionary);
+
+            // assert
+            Assert.False(result);
+            Assert.Contains("ExpiryYear", errorDictionary.Keys);
+            Assert.Equal("Expiry year must be in the future", errorDictionary["ExpiryYear"]);
+        }
+
+        [Fact]
         public void Validate_ReturnsFalse_WhenExpiryYearInThePast()
         {
             // Arrange

@@ -14,6 +14,21 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
+        public void Validate_ReturnsFalse_WhenInputNull()
+        {
+            // arrange
+            PostPaymentRequest request = null;
+
+            // act
+            var result = validator.Validate(request, out var errorDictionary);
+
+            // assert
+            Assert.False(result);
+            Assert.Contains("Cvv", errorDictionary.Keys);
+            Assert.Equal("Cvv must be between 3 to 4 digits", errorDictionary["Cvv"]);
+        }
+
+        [Fact]
         public void Validate_ReturnsFalse_WhenCvvGreaterThanFourDigits()
         {
             // Arrange

@@ -12,6 +12,21 @@ namespace PaymentGateway.Api.Tests.Tests
         }
 
         [Fact]
+        public void Validate_ReturnsFalse_WhenInputNull()
+        {
+            // arrange
+            PostPaymentRequest request = null;
+
+            // act
+            var result = validator.Validate(request, out var errorDictionary);
+
+            // assert
+            Assert.False(result);
+            Assert.Contains("CardNumber", errorDictionary.Keys);
+            Assert.Equal("Card number must be between 14 and 19 digits.", errorDictionary["CardNumber"]);
+        }
+
+        [Fact]
         public void Validate_ReturnsFalse_WhenCardNumberIsNull()
         {
             // Arrange

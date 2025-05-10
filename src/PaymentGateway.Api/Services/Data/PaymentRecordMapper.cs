@@ -14,7 +14,13 @@ public class PaymentRecordMapper : IPaymentRecordMapper
         string cardNumber = request.CardNumber ?? string.Empty;
         int lastFour = 0;
         if (cardNumber.Length >= 4)
-            lastFour = int.TryParse(cardNumber.Substring(cardNumber.Length-4, 4), out int parsed) ? parsed : 0;
+        {
+            if(cardNumber.All(x => char.IsDigit(x)))
+                lastFour = int.TryParse(cardNumber.Substring(cardNumber.Length-4, 4), out int parsed) ? parsed : 0;
+            else
+                lastFour = 0;
+        }
+            
         
         return new PaymentRecord()
         {
