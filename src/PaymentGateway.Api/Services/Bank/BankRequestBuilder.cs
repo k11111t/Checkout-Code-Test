@@ -3,6 +3,7 @@ using System.Text.Json;
 
 using PaymentGateway.Api.Models.Requests;
 
+namespace PaymentGateway.Api.Services.Bank;
 public class BankRequestBuilder : IBankRequestBuilder
 {
     private readonly IPaymentGatewayConfiguration _config;

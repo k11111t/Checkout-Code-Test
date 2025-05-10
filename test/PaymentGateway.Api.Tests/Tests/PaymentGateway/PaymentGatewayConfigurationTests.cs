@@ -1,6 +1,6 @@
 using PaymentGateway.Api.Services.PaymentGateway;
 
-namespace PaymentGateway.Api.Tests.Tests;
+namespace PaymentGateway.Api.Tests.PaymentGateway;
 public class PaymentGatewayConfigurationTests
 {
     [Fact]

@@ -21,7 +21,6 @@ public class PaymentRecordMapper : IPaymentRecordMapper
                 lastFour = 0;
         }
             
-        
         return new PaymentRecord()
         {
             Id = Guid.NewGuid(),

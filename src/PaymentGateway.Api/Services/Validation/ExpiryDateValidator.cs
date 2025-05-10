@@ -1,6 +1,7 @@
 using PaymentGateway.Api.Interfaces;
 using PaymentGateway.Api.Models.Requests;
 
+namespace PaymentGateway.Api.Services.Validation;
 public class ExpiryDateValidator : IValidator<PostPaymentRequest>
 {
     public bool Validate(PostPaymentRequest request, out Dictionary<string,string> errorDictionary)

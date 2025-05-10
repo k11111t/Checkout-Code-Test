@@ -1,8 +1,7 @@
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Services.Data;
-using Xunit;
 
-namespace PaymentGateway.Tests.Services.Data
+namespace PaymentGateway.Api.Tests.Mappers
 {
     public class BankPaymentMapperTests
     {

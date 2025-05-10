@@ -1,7 +1,8 @@
 using PaymentGateway.Api.Models.Requests;
 using Moq;
+using PaymentGateway.Api.Services.Validation;
 
-namespace PaymentGateway.Api.Tests.Tests
+namespace PaymentGateway.Api.Tests.Validators
 {
     public class CurrencyValidatorTests
     {

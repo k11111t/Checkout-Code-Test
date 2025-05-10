@@ -5,7 +5,7 @@ using PaymentGateway.Api.Controllers;
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
 
-namespace PaymentGateway.Api.Tests.Tests;
+namespace PaymentGateway.Api.Tests.Controller;
 
 public class PaymentsControllerTests
 {

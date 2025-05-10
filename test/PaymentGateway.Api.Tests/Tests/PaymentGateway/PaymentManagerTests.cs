@@ -8,7 +8,7 @@ using PaymentGateway.Api.Interfaces;
 using PaymentGateway.Api.Services.PaymentGateway;
 using PaymentGateway.Api.Services.Data;
 
-namespace PaymentGateway.Api.Tests.Tests;
+namespace PaymentGateway.Api.Tests.PaymentGateway;
 public class PaymentManagerTests
 {
     readonly Mock<IValidatorManager<PostPaymentRequest>> validator = new();

@@ -7,7 +7,7 @@ using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Api.Services.Bank;
 
 
-namespace PaymentGateway.Api.Tests.Tests;
+namespace PaymentGateway.Api.Tests.Bank;
 public class BankPaymentManagerTest
 {
     readonly Mock<HttpMessageHandler> httpHandler = new();

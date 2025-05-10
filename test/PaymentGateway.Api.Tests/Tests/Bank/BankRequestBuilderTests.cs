@@ -1,8 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using PaymentGateway.Api.Models.Requests;
+using PaymentGateway.Api.Services.Bank;
 
-namespace PaymentGateway.Api.Tests.Tests;
+namespace PaymentGateway.Api.Tests.Bank;
 public class BankRequestBuilderTests
 {
     readonly Mock<IPaymentGatewayConfiguration> config = new ();

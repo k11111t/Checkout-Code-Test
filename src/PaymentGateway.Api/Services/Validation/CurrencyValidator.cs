@@ -1,6 +1,7 @@
 using PaymentGateway.Api.Interfaces;
 using PaymentGateway.Api.Models.Requests;
 
+namespace PaymentGateway.Api.Services.Validation;
 public class CurrencyValidator : IValidator<PostPaymentRequest>
 {
     private readonly IPaymentGatewayConfiguration _config;

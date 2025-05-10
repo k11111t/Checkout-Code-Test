@@ -2,6 +2,7 @@ using System.Text.Json;
 
 using PaymentGateway.Api.Models.Responses;
 
+namespace PaymentGateway.Api.Services.Bank;
 public class BankResponseParser : IBankResponseParser
 {
     private readonly ILogger<BankResponseParser>  _logger;

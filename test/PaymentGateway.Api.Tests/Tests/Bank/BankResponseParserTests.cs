@@ -2,8 +2,9 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PaymentGateway.Api.Models.Responses;
+using PaymentGateway.Api.Services.Bank;
 
-namespace PaymentGateway.Api.Tests.Tests;
+namespace PaymentGateway.Api.Tests.Bank;
 public class BankResponseParserTests
 {
     readonly Mock<ILogger<BankResponseParser>> logger = new ();
